@@ -23,36 +23,35 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
 
 REPO_URL="https://github.com/ZolaNUAA/cyber-practice.git"
-
-# ── 如果还没有项目文件，从 GitHub 克隆 ─────────────
-if [[ ! -f "student.sh" || ! -d "labs" ]]; then
-    echo -e "\n[1/1] 从 GitHub 克隆实验内容..."
-    if ! command -v git &>/dev/null; then
-        echo "❌ git 未安装，请先运行: apt-get install git"
-        exit 1
-    fi
-    # 克隆到临时目录再移动，避免覆盖已有文件
-    TEMP_DIR=$(mktemp -d /tmp/cyber-practice.XXXXXX)
-    git clone --depth=1 "$REPO_URL" "$TEMP_DIR"
-    # 移动所有文件到当前目录
-    cp -r "$TEMP_DIR/"* "$TEMP_DIR"/.[!.]* "$ROOT_DIR/" 2>/dev/null || true
-    rm -rf "$TEMP_DIR"
-    echo "✅ 克隆完成"
-fi
-
-# ── 参数解析 ───────────────────────────────────────
+KALI_MIRROR="${KALI_MIRROR:-http://mirrors.ustc.edu.cn/kali}"
+DOCKER_APT_MIRROR="${DOCKER_APT_MIRROR:-https://mirrors.aliyun.com/docker-ce/linux/debian}"
+DOCKER_DEBIAN_CODENAME="${DOCKER_DEBIAN_CODENAME:-bookworm}"
+CHINA_MIRRORS="${CHINA_MIRRORS:-true}"
 SKIP_TOOLS=false
 MAKE_STUDENT_IMAGE=false
 
+# ── 参数解析 ───────────────────────────────────────
 for arg in "$@"; do
     case "$arg" in
         --skip-tools) SKIP_TOOLS=true ;;
         --student-image) MAKE_STUDENT_IMAGE=true ;;
+        --no-china-mirrors) CHINA_MIRRORS=false ;;
         --help|-h)
             echo "用法: sudo ./setup-lab-vm.sh [选项]"
-            echo "  --skip-tools      跳过工具安装"
-            echo "  --student-image   完成后制作学生镜像"
+            echo "  --skip-tools          跳过工具安装"
+            echo "  --student-image       完成后制作学生镜像"
+            echo "  --no-china-mirrors    不切换国内 apt/Docker 加速源"
+            echo
+            echo "环境变量:"
+            echo "  KALI_MIRROR           Kali apt 源，默认: $KALI_MIRROR"
+            echo "  DOCKER_APT_MIRROR     Docker CE apt 源，默认: $DOCKER_APT_MIRROR"
+            echo "  DOCKER_DEBIAN_CODENAME Docker CE Debian 发行版名，默认: $DOCKER_DEBIAN_CODENAME"
             exit 0
+            ;;
+        *)
+            echo "未知参数: $arg"
+            echo "运行 --help 查看用法"
+            exit 1
             ;;
     esac
 done
@@ -80,6 +79,75 @@ fi
 ACTUAL_USER="${SUDO_USER:-$USER}"
 ACTUAL_HOME=$(eval echo "~$ACTUAL_USER")
 
+configure_china_mirrors() {
+    if ! $CHINA_MIRRORS; then
+        info "国内加速源: 已关闭"
+        return 0
+    fi
+
+    info "配置 Kali 国内 apt 源: $KALI_MIRROR"
+    if [[ -f /etc/apt/sources.list && ! -f /etc/apt/sources.list.cyber-practice.bak ]]; then
+        cp /etc/apt/sources.list /etc/apt/sources.list.cyber-practice.bak
+    fi
+
+    cat > /etc/apt/sources.list <<APT
+deb $KALI_MIRROR kali-rolling main contrib non-free non-free-firmware
+APT
+
+    mkdir -p /etc/apt/apt.conf.d
+    cat > /etc/apt/apt.conf.d/99cyber-practice-retries <<'APTCONF'
+Acquire::Retries "3";
+Acquire::http::Timeout "20";
+Acquire::https::Timeout "20";
+APTCONF
+    ok "apt 源已切换，原文件备份为 /etc/apt/sources.list.cyber-practice.bak"
+}
+
+install_git_if_missing() {
+    command -v git &>/dev/null && return 0
+
+    info "git 未安装，先补装 git 以便自动克隆项目..."
+    apt-get update -qq
+    apt-get install -y -qq git ca-certificates curl
+    ok "git 已安装"
+}
+
+configure_docker_registry_mirrors() {
+    $CHINA_MIRRORS || return 0
+
+    info "配置 Docker Hub 国内加速镜像..."
+    mkdir -p /etc/docker
+    if [[ -f /etc/docker/daemon.json && ! -f /etc/docker/daemon.json.cyber-practice.bak ]]; then
+        cp /etc/docker/daemon.json /etc/docker/daemon.json.cyber-practice.bak
+    fi
+
+    cat > /etc/docker/daemon.json <<'DOCKERJSON'
+{
+  "registry-mirrors": [
+    "https://docker.m.daocloud.io",
+    "https://docker.1ms.run",
+    "https://dockerproxy.cn"
+  ],
+  "max-concurrent-downloads": 6
+}
+DOCKERJSON
+    ok "Docker 镜像加速已写入 /etc/docker/daemon.json"
+}
+
+# ── 如果还没有项目文件，从 GitHub 克隆 ─────────────
+if [[ ! -f "student.sh" || ! -d "labs" ]]; then
+    echo -e "\n[1/1] 从 GitHub 克隆实验内容..."
+    configure_china_mirrors
+    install_git_if_missing
+    # 克隆到临时目录再移动，避免覆盖已有文件
+    TEMP_DIR=$(mktemp -d /tmp/cyber-practice.XXXXXX)
+    git clone --depth=1 "$REPO_URL" "$TEMP_DIR"
+    # 移动所有文件到当前目录
+    cp -r "$TEMP_DIR/"* "$TEMP_DIR"/.[!.]* "$ROOT_DIR/" 2>/dev/null || true
+    rm -rf "$TEMP_DIR"
+    echo "✅ 克隆完成"
+fi
+
 echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════╗${RESET}"
 echo -e "${BOLD}${CYAN}║${RESET}     ${BOLD}Cyber Practice Lab — 一键环境部署${RESET}              ${BOLD}${CYAN}║${RESET}"
 echo -e "${BOLD}${CYAN}║${RESET}  目标: 将 Kali VM 变成完整的 12 实验教学环境         ${BOLD}${CYAN}║${RESET}"
@@ -94,7 +162,19 @@ echo
 # 步骤 1: 系统更新
 # ─────────────────────────────────────────────────────
 step "1" "系统包更新"
-apt-get update -qq && ok "apt update 完成" || { fail "apt update 失败"; ERRORS+=("apt update"); }
+configure_china_mirrors
+if apt-get update -qq; then
+    ok "apt update 完成"
+else
+    fail "apt update 失败"
+    if $CHINA_MIRRORS && [[ -f /etc/apt/sources.list.cyber-practice.bak ]]; then
+        warn "国内源不可用，恢复 Kali 默认源后重试"
+        cp /etc/apt/sources.list.cyber-practice.bak /etc/apt/sources.list
+        apt-get update -qq && ok "apt update 使用默认源完成" || ERRORS+=("apt update")
+    else
+        ERRORS+=("apt update")
+    fi
+fi
 
 # ─────────────────────────────────────────────────────
 # 步骤 2: 安装所有工具
@@ -135,23 +215,32 @@ step "3" "Docker 安装与配置"
 
 if command -v docker &>/dev/null && docker version &>/dev/null 2>&1; then
     ok "Docker 已安装并运行"
+    configure_docker_registry_mirrors
+    systemctl restart docker 2>/dev/null || service docker restart 2>/dev/null || true
 else
     info "安装 Docker..."
     # Kali/Ubuntu 仓库通常已包含 docker.io；Compose 插件包名在不同发行版上略有差异。
     apt-get install -y -qq docker.io docker-compose-plugin 2>/dev/null || \
     apt-get install -y -qq docker.io docker-compose-v2 2>/dev/null || {
-        # 回退：使用 Docker 官方仓库
-        info "从 Docker 官方仓库安装..."
+        # 回退：使用 Docker CE 仓库。国内默认走阿里云镜像，可用 DOCKER_APT_MIRROR 覆盖。
+        info "从 Docker CE apt 仓库安装..."
         install -m 0755 -d /etc/apt/keyrings
+        docker_apt_repo="$DOCKER_APT_MIRROR"
+        $CHINA_MIRRORS || docker_apt_repo="https://download.docker.com/linux/debian"
+        rm -f /etc/apt/keyrings/docker.gpg
+        curl -fsSL "$docker_apt_repo/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg 2>/dev/null || \
         curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg 2>/dev/null
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] $docker_apt_repo $DOCKER_DEBIAN_CODENAME stable" > /etc/apt/sources.list.d/docker.list
         apt-get update -qq
         apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin
     }
     ok "Docker 安装完成"
 
+    configure_docker_registry_mirrors
+
     info "启动 Docker 服务..."
     systemctl enable --now docker 2>/dev/null || service docker start 2>/dev/null
+    systemctl restart docker 2>/dev/null || service docker restart 2>/dev/null || true
     ok "Docker 服务已启动"
 fi
 

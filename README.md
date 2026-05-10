@@ -13,6 +13,23 @@ sudo ./setup-lab-vm.sh
 ```
 
 首次运行会自动从 GitHub 克隆所有文件，**无需手动 git clone**。
+脚本默认使用国内加速源，适合南京/国内校园网：
+
+- Kali apt: `http://mirrors.ustc.edu.cn/kali`
+- Docker CE apt: `https://mirrors.aliyun.com/docker-ce/linux/debian`
+- Docker Hub registry mirrors: DaoCloud、1ms、dockerproxy
+
+如果不想切换国内源：
+
+```bash
+sudo ./setup-lab-vm.sh --no-china-mirrors
+```
+
+如需指定学校或单位自己的 Kali 镜像：
+
+```bash
+sudo env KALI_MIRROR=http://your.mirror/kali ./setup-lab-vm.sh
+```
 
 这会自动完成：
 - 自动克隆 GitHub 上的所有实验文件
