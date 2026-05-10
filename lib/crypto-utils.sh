@@ -87,5 +87,6 @@ crypto_decrypt_lab() {
 # ── 检查实验是否处于加密状态 ──────────────────────
 crypto_is_encrypted() {
     local lab_dir="$1"
-    [[ -f "$lab_dir/.encrypted" ]]
+    local lab_name; lab_name=$(basename "$lab_dir")
+    [[ -f "$lab_dir/.encrypted" || -f "$lab_dir/${lab_name}.enc" ]]
 }
