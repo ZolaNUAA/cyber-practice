@@ -66,10 +66,10 @@ ls -lh evidence/ids/
 cat evidence/ids/eve.json
 
 # 或者查看格式化后的 JSON
-jq . evidence/ids/eve.json
+jq -s . evidence/ids/eve.json
 ```
 
-**预期输出**（示例）：
+**预期输出**（示例，`jq -s .` 会把多行 JSON 告警临时显示为数组）：
 ```json
 [
   {
@@ -117,19 +117,19 @@ jq . evidence/ids/eve.json
 
 ```bash
 # 查看告警总数
-jq 'length' evidence/ids/eve.json
+jq -s 'length' evidence/ids/eve.json
 
 # 按严重程度分组统计
-jq -r '[.[] | .alert.severity] | group_by(.) | map({severity: .[0], count: length})' evidence/ids/eve.json
+jq -s -r '[.[] | .alert.severity] | group_by(.) | map({severity: .[0], count: length})' evidence/ids/eve.json
 
 # 按告警类型分组
-jq -r '[.[] | .alert.category] | group_by(.) | map({category: .[0], count: length})' evidence/ids/eve.json
+jq -s -r '[.[] | .alert.category] | group_by(.) | map({category: .[0], count: length})' evidence/ids/eve.json
 
 # 按目标端口分组（确定被攻击的服务）
-jq -r '[.[] | .dest_port] | group_by(.) | map({port: .[0], count: length})' evidence/ids/eve.json
+jq -s -r '[.[] | .dest_port] | group_by(.) | map({port: .[0], count: length})' evidence/ids/eve.json
 
 # 按源 IP 分组（确定攻击来源）
-jq -r '[.[] | .src_ip] | group_by(.) | map({ip: .[0], count: length})' evidence/ids/eve.json
+jq -s -r '[.[] | .src_ip] | group_by(.) | map({ip: .[0], count: length})' evidence/ids/eve.json
 ```
 
 **记录**：
@@ -145,10 +145,10 @@ jq -r '[.[] | .src_ip] | group_by(.) | map({ip: .[0], count: length})' evidence/
 
 ```bash
 # 格式化输出为表格（时间、告警名称、严重程度、目标端口、URL）
-jq -r '.[] | [.timestamp, .alert.signature, .alert.severity, .dest_port, .http.url] | @tsv' evidence/ids/eve.json
+jq -s -r '.[] | [.timestamp, .alert.signature, .alert.severity, .dest_port, .http.url] | @tsv' evidence/ids/eve.json
 
 # 标记高严重程度的告警
-jq -r '.[] | if .alert.severity <= 2 then "⚠️ HIGH: \(.alert.signature)" else "  LOW: \(.alert.signature)" end' evidence/ids/eve.json
+jq -s -r '.[] | if .alert.severity <= 2 then "⚠️ HIGH: \(.alert.signature)" else "  LOW: \(.alert.signature)" end' evidence/ids/eve.json
 ```
 
 **预期输出**：
@@ -168,27 +168,26 @@ timestamp                 signature                           severity  port  ur
 
 ```bash
 # 检查是否存在同一源 IP 的多次告警
-jq -r '[.[] | {src: .src_ip, signature: .alert.signature, time: .timestamp}]' evidence/ids/eve.json | \
-  jq -s 'group_by(.src) | .[] | {ip: .[0].src, count: length, alerts: [.[] | .signature]}'
+jq -s 'group_by(.src_ip) | .[] | {ip: .[0].src_ip, count: length, alerts: [.[] | .alert.signature]}' evidence/ids/eve.json
 
 # 检查是否有时间相近的连续告警（可能是攻击者在扫描）
-jq -r '.[] | .timestamp' evidence/ids/eve.json
+jq -s -r '.[] | .timestamp' evidence/ids/eve.json
 ```
 
 ### 步骤 5：告警详情深度分析
 
 ```bash
-# 查看特定告警的完整信息（-s 为单条，不是数组）
-jq '.[] | select(.alert.severity==1)' evidence/ids/eve.json
+# 查看特定告警的完整信息（-s 会把 NDJSON 多行告警临时读成数组）
+jq -s '.[] | select(.alert.severity==1)' evidence/ids/eve.json
 
 # 查找特定 URL 的告警
-jq '.[] | select(.http.url | contains("beacon"))' evidence/ids/eve.json
+jq -s '.[] | select(.http.url | contains("beacon"))' evidence/ids/eve.json
 
 # 查找特定类别的告警
-jq '.[] | select(.alert.category == "Web Application Attack")' evidence/ids/eve.json
+jq -s '.[] | select(.alert.category == "Web Application Attack")' evidence/ids/eve.json
 
 # 提取所有告警的完整 HTTP 信息
-jq -r '.[] | "\(.timestamp) | \(.src_ip):\(.src_port) -> \(.dest_ip):\(.dest_port) | \(.http.url) | UA: \(.http.http_user_agent)"' evidence/ids/eve.json
+jq -s -r '.[] | "\(.timestamp) | \(.src_ip):\(.src_port) -> \(.dest_ip):\(.dest_port) | \(.http.url) | UA: \(.http.http_user_agent)"' evidence/ids/eve.json
 ```
 
 ### 步骤 6：撰写分析笔记
@@ -275,19 +274,19 @@ Suricata severity 等级：
 
 ```bash
 # 条件过滤
-jq '.[] | select(.alert.severity > 2)'  # 只看严重程度 > 2
+jq -s '.[] | select(.alert.severity > 2)' evidence/ids/eve.json  # 只看严重程度 > 2
 
 # 聚合统计
-jq '[.[].alert.signature] | group_by(.) | map({sig: .[0], count: length}) | sort_by(.count) | reverse'
+jq -s '[.[].alert.signature] | group_by(.) | map({sig: .[0], count: length}) | sort_by(.count) | reverse' evidence/ids/eve.json
 
 # 时间范围过滤
-jq '.[] | select(.timestamp | startswith("2026-05-10T10"))'
+jq -s '.[] | select(.timestamp | startswith("2026-05-10T10"))' evidence/ids/eve.json
 
 # 多字段排序
-jq 'sort_by(.alert.severity, .timestamp)'
+jq -s 'sort_by(.alert.severity, .timestamp)' evidence/ids/eve.json
 
 # 输出为 CSV
-jq -r '.[] | [.timestamp, .alert.signature, .alert.severity] | @csv'
+jq -s -r '.[] | [.timestamp, .alert.signature, .alert.severity] | @csv' evidence/ids/eve.json
 ```
 
 ## 思考题
@@ -348,19 +347,19 @@ jq -r '.[] | [.timestamp, .alert.signature, .alert.severity] | @csv'
 
 ```bash
 # jq 基础分析
-jq . evidence/ids/eve.json                          # 格式化显示
-jq 'length' evidence/ids/eve.json                  # 告警总数
-jq -r '.[] | .alert.signature' evidence/ids/eve.json  # 所有告警名称
-jq -r '.[] | [.timestamp, .alert.severity, .dest_port] | @tsv' evidence/ids/eve.json  # 表格输出
+jq -s . evidence/ids/eve.json                          # 格式化显示
+jq -s 'length' evidence/ids/eve.json                  # 告警总数
+jq -s -r '.[] | .alert.signature' evidence/ids/eve.json  # 所有告警名称
+jq -s -r '.[] | [.timestamp, .alert.severity, .dest_port] | @tsv' evidence/ids/eve.json  # 表格输出
 
 # 过滤分析
-jq '.[] | select(.alert.severity <= 2)' evidence/ids/eve.json   # 高优先级
-jq '.[] | select(.http.url | contains("backup"))' evidence/ids/eve.json  # 特定URL
+jq -s '.[] | select(.alert.severity <= 2)' evidence/ids/eve.json   # 高优先级
+jq -s '.[] | select(.http.url | contains("backup"))' evidence/ids/eve.json  # 特定URL
 
 # 统计
-jq -r '[.[].alert.severity] | group_by(.) | map({sev: .[0], count: length})' evidence/ids/eve.json
-jq -r '[.[].dest_port] | group_by(.) | map({port: .[0], count: length})' evidence/ids/eve.json
+jq -s -r '[.[].alert.severity] | group_by(.) | map({sev: .[0], count: length})' evidence/ids/eve.json
+jq -s -r '[.[].dest_port] | group_by(.) | map({port: .[0], count: length})' evidence/ids/eve.json
 
 # 排序和限制
-jq 'sort_by(.alert.severity) | .[:5]' evidence/ids/eve.json  # 前 5 条最严重
+jq -s 'sort_by(.alert.severity) | .[:5]' evidence/ids/eve.json  # 前 5 条最严重
 ```

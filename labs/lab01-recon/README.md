@@ -14,7 +14,7 @@ cd ~/cyber-practice
 ## Tasks
 
 1. Confirm the lab boundary is `127.0.0.1`.
-2. Scan the expected local ports: `3000,8080,8082,8086,2222`.
+2. Scan the expected local ports: `3000,8080,8082,8086,8089,2222`.
 3. Identify service names and versions where possible.
 4. Visit the HTTP services in a browser.
 5. Create an asset table with port, service, purpose, and risk.
@@ -22,7 +22,7 @@ cd ~/cyber-practice
 ## Useful Commands
 
 ```bash
-nmap -sV -p 3000,8080,8082,8086,2222 127.0.0.1
+nmap -sV -p 3000,8080,8082,8086,8089,2222 127.0.0.1
 curl -I http://127.0.0.1:8082/
 ssh student@127.0.0.1 -p 2222
 ```
@@ -33,4 +33,3 @@ ssh student@127.0.0.1 -p 2222
 - Scan screenshot or command output
 - At least three risk observations
 - Lab boundary statement
-
