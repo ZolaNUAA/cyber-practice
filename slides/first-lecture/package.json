@@ -1,0 +1,15 @@
+{
+  "name": "cyber-practice-first-lecture",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "slidev --port 3000 --open",
+    "build": "slidev build",
+    "export": "slidev export"
+  },
+  "dependencies": {
+    "@slidev/cli": "^52.15.2",
+    "@slidev/theme-default": "*",
+    "@slidev/theme-seriph": "*"
+  }
+}
