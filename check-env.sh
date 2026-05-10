@@ -12,10 +12,14 @@ docker version --format 'Docker client {{.Client.Version}}, server {{.Server.Ver
 docker compose version
 
 echo "[*] Checking required tools"
-for tool in nmap curl tcpdump tshark jq; do
+for tool in nmap curl tcpdump tshark jq nc; do
   command -v "$tool" >/dev/null && echo "  ok: $tool" || echo "  missing: $tool"
 done
 
 echo "[*] Checking compose config"
 docker compose config >/dev/null
-echo "Environment looks ready."
+
+echo "[*] Preparing lab data"
+./prepare-lab-data.sh >/dev/null
+
+echo "Environment looks ready. Run ./verify-lab-env.sh for a full 12-lab service check."

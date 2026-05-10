@@ -42,7 +42,7 @@ services:
   traffic-lab:
     build: ./services/traffic-lab
     container_name: traffic-lab
-    profiles: ["traffic", "logs"]
+    profiles: ["recon", "traffic", "logs"]
     ports:
       - "127.0.0.1:8089:8080"
     volumes:
@@ -59,14 +59,14 @@ services:
   juice-shop:
     image: bkimminich/juice-shop:latest
     container_name: juice-shop
-    profiles: ["sqli", "xss"]
+    profiles: ["recon", "sqli", "xss"]
     ports:
       - "127.0.0.1:3000:3000"
 
   webgoat:
     image: webgoat/webgoat:latest
     container_name: webgoat
-    profiles: ["sqli", "xss"]
+    profiles: ["recon", "sqli", "xss"]
     ports:
       - "127.0.0.1:8080:8080"
 

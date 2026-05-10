@@ -30,6 +30,8 @@ profile_for_lab() {
 if [[ -z "$LAB" ]]; then usage; exit 1; fi
 PROFILE="$(profile_for_lab "$LAB")" || { usage; exit 1; }
 
+"$ROOT_DIR/prepare-lab-data.sh" >/dev/null
+
 echo "[*] Starting $LAB ($PROFILE)"
 docker compose --profile "$PROFILE" up -d --build
 
@@ -38,7 +40,7 @@ echo "Lab manual:"
 find "$ROOT_DIR/labs" -maxdepth 2 -type f -name "README.md" | sort | grep "$LAB" || true
 echo
 case "$LAB" in
-  lab01) echo "Targets: http://127.0.0.1:8082, http://127.0.0.1:8086, ssh student@127.0.0.1 -p 2222" ;;
+  lab01) echo "Targets: http://127.0.0.1:8082, http://127.0.0.1:8086, http://127.0.0.1:8089, http://127.0.0.1:3000, http://127.0.0.1:8080/WebGoat, ssh student@127.0.0.1 -p 2222" ;;
   lab02) echo "Target: http://127.0.0.1:8082" ;;
   lab03) echo "Target: ssh student@127.0.0.1 -p 2222 ; password Student123" ;;
   lab04) echo "Target: http://127.0.0.1:3000 and http://127.0.0.1:8080/WebGoat" ;;
@@ -51,4 +53,3 @@ case "$LAB" in
   lab11) echo "Evidence: evidence/logs/" ;;
   lab12) echo "Target: http://127.0.0.1:8092 ; evidence/incident/" ;;
 esac
-

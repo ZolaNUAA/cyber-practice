@@ -74,14 +74,14 @@ SELECT * FROM users WHERE user='admin'--' AND pass='anything'
 # 或使用 OWASP ZAP（如果 Kali 自带）
 # 本实验使用 curl 作为主要工具（Burp 操作类似）
 
-# 配置代理（如果需要）
-export http_proxy=http://127.0.0.1:8080
-export https_proxy=http://127.0.0.1:8080
+# 配置代理（如果需要）。注意 8080 已经被 WebGoat 使用，Burp/ZAP 请改用 8081。
+export http_proxy=http://127.0.0.1:8081
+export https_proxy=http://127.0.0.1:8081
 ```
 
 **Burp Suite 关键操作**（如果你使用 GUI）：
 1. Proxy → Intercept → 开启 intercept
-2. 浏览器设置手动代理 `127.0.0.1:8080`
+2. 在 Burp/ZAP 中把代理监听端口设为 `8081`，浏览器设置手动代理 `127.0.0.1:8081`
 3. 访问目标 URL，请求被拦截
 4. 修改参数后，Forward 发送
 

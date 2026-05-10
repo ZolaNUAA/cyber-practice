@@ -49,7 +49,7 @@ sudo systemctl restart docker || true
 sudo usermod -aG docker "${USER}"
 
 echo "[*] Preparing local directories"
-mkdir -p "$ROOT_DIR/reports" "$ROOT_DIR/pcaps" "$ROOT_DIR/evidence" "$ROOT_DIR/logs"
+"$ROOT_DIR/prepare-lab-data.sh"
 
 echo "[*] Building and pulling lab containers"
 cd "$ROOT_DIR"

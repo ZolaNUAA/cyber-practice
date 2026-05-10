@@ -17,11 +17,7 @@ echo "[*] Resetting local evidence directories"
 mkdir -p evidence/ids evidence/logs evidence/incident pcaps reports logs
 find evidence/ids evidence/logs evidence/incident pcaps reports logs -type f -delete
 
-mkdir -p evidence/ids evidence/logs evidence/incident
-cp services/ids-lab/eve.json evidence/ids/eve.json
-cp services/incident-lab/evidence/* evidence/incident/ 2>/dev/null || true
-cp services/traffic-lab/sample-logs/* evidence/logs/ 2>/dev/null || true
+"$ROOT_DIR/prepare-lab-data.sh"
 
 echo "[*] Starting requested lab"
 "$ROOT_DIR/start-lab.sh" "$LAB"
-

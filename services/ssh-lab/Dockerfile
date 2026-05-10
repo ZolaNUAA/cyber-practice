@@ -1,6 +1,8 @@
 FROM debian:bookworm-slim
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+ARG DEBIAN_MIRROR=http://mirrors.ustc.edu.cn/debian
+RUN sed -i "s|http://deb.debian.org/debian|${DEBIAN_MIRROR}|g; s|http://security.debian.org/debian-security|${DEBIAN_MIRROR}-security|g" /etc/apt/sources.list.d/debian.sources \
+    && apt-get update && apt-get install -y --no-install-recommends \
     openssh-server sudo procps vim less \
     && rm -rf /var/lib/apt/lists/*
 
@@ -18,4 +20,3 @@ RUN mkdir -p /run/sshd \
 
 EXPOSE 22
 CMD ["/usr/sbin/sshd", "-D", "-e"]
-

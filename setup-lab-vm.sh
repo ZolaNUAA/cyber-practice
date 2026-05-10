@@ -307,65 +307,31 @@ fi
 # ─────────────────────────────────────────────────────
 step "6" "准备目录结构"
 
-mkdir -p reports pcaps submit logs
-mkdir -p evidence/ids evidence/logs evidence/incident
+if [[ -x "$ROOT_DIR/prepare-lab-data.sh" ]]; then
+    "$ROOT_DIR/prepare-lab-data.sh" >/dev/null
+else
+    mkdir -p reports pcaps submit logs
+    mkdir -p evidence/ids evidence/logs evidence/incident
+fi
 chown -R "$ACTUAL_USER:$ACTUAL_USER" reports pcaps submit logs evidence 2>/dev/null || true
-ok "目录结构就绪"
+ok "目录结构与预置证据就绪"
 
 # ─────────────────────────────────────────────────────
 # 步骤 7: 逐一验证所有实验
 # ─────────────────────────────────────────────────────
 step "7" "验证所有实验环境"
 
-LABS=(
-    "lab01:recon"
-    "lab02:info-leak"
-    "lab03:auth"
-    "lab04:sqli"
-    "lab05:xss"
-    "lab06:upload"
-    "lab07:cmd"
-    "lab08:priv"
-    "lab09:traffic"
-    "lab10:ids"
-    "lab11:logs"
-    "lab12:incident"
-)
-
-LAB_PASS=0
-LAB_FAIL=0
-
-for entry in "${LABS[@]}"; do
-    lab="${entry%%:*}"
-    profile="${entry##*:}"
-    echo -n "  $lab ($profile)... "
-
-    # 启动
-    if docker_cmd compose --profile "$profile" up -d --wait 2>/dev/null; then
-        # 简单验证：等2秒然后检查容器状态
-        sleep 2
-        CONTAINERS=$(docker_cmd compose --profile "$profile" ps -q 2>/dev/null | wc -l)
-        if [[ $CONTAINERS -gt 0 ]]; then
-            echo -e "${GREEN}OK${RESET} ($CONTAINERS 容器)"
-            LAB_PASS=$((LAB_PASS + 1))
-        else
-            echo -e "${YELLOW}WARN${RESET} (无运行容器)"
-            LAB_FAIL=$((LAB_FAIL + 1))
-            ERRORS+=("verify:$lab")
-        fi
+if [[ -x "$ROOT_DIR/verify-lab-env.sh" ]]; then
+    if "$ROOT_DIR/verify-lab-env.sh"; then
+        ok "12 个实验环境均通过端口、Web 响应和证据文件检查"
     else
-        echo -e "${RED}FAIL${RESET}"
-        LAB_FAIL=$((LAB_FAIL + 1))
-        ERRORS+=("verify:$lab")
+        fail "12 实验环境验收未全部通过"
+        ERRORS+=("verify-lab-env")
     fi
-
-    # 停止
-    docker_cmd compose --profile "$profile" down 2>/dev/null
-done
-
-echo
-info "验证结果: ${LAB_PASS}/${#LABS[@]} 通过"
-[[ $LAB_FAIL -gt 0 ]] && warn "${LAB_FAIL} 个实验验证失败"
+else
+    warn "找不到 verify-lab-env.sh，跳过深度验收"
+    ERRORS+=("missing verify-lab-env.sh")
+fi
 
 # ─────────────────────────────────────────────────────
 # 步骤 8: 最终检查
