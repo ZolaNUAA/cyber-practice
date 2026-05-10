@@ -381,7 +381,7 @@ guide_start() {
     progress_init
     load_teacher_config
 
-    # ── 尝试从 Git 拉取最新实验文件 ──────────────
+    # ── 从 Git 拉取最新加密文件 ──────────────────
     if crypto_is_encrypted "$GUIDE_LAB_DIR"; then
         local updated_from_git=false
         if command -v git &>/dev/null; then
@@ -389,20 +389,11 @@ guide_start() {
             if [[ -n "$git_dir" ]]; then
                 echo
                 ui_info "正在检查实验更新..."
-                # 尝试 fetch 最新版本
                 if cd "$git_dir" && git fetch origin 2>/dev/null; then
-                    # 检查这个实验目录是否有更新
+                    # 拉取该实验的最新 .enc 文件
                     local lab_glob="labs/${GUIDE_LAB_ID}*"
-                    if git diff --quiet "HEAD..origin/main" -- "$lab_glob"/ 2>/dev/null; then
-                        ui_dim "  实验内容无更新，使用本地版本。"
-                    else
-                        # 有更新！检出最新文件
-                        if git checkout "origin/main" -- "$lab_glob"/ 2>/dev/null; then
-                            ui_success "已更新到最新版本！"
-                            # git 拉下来的文件是明文，清除加密状态
-                            rm -f "$GUIDE_LAB_DIR"/.encrypted "$GUIDE_LAB_DIR"/*.enc 2>/dev/null
-                            updated_from_git=true
-                        fi
+                    if git checkout "origin/main" -- "$lab_glob"/*.enc 2>/dev/null; then
+                        ui_success "已同步最新版本！"
                     fi
                 else
                     ui_dim "  无法连接网络，使用本地版本。"
@@ -411,24 +402,22 @@ guide_start() {
             fi
         fi
 
-        # 如果 git 更新成功，跳过密码；否则提示输入密码
-        if ! $updated_from_git; then
-            echo
-            ui_info "此实验需要密码才能解锁。请输入老师提供的密码："
-            echo -ne "  > "
-            read -r pwd
-            if [[ -z "$pwd" ]]; then
-                ui_error "密码不能为空。"
-                ui_press_enter
-                return 1
-            fi
-            if ! crypto_decrypt_lab "$GUIDE_LAB_DIR" "$pwd"; then
-                ui_error "密码错误！请检查后重试。"
-                ui_press_enter
-                return 1
-            fi
-            ui_success "实验已解锁！开始学习吧。"
+        # 提示输入密码解密
+        echo
+        ui_info "请输入老师提供的密码来解锁此实验："
+        echo -ne "  > "
+        read -r pwd
+        if [[ -z "$pwd" ]]; then
+            ui_error "密码不能为空。"
+            ui_press_enter
+            return 1
         fi
+        if ! crypto_decrypt_lab "$GUIDE_LAB_DIR" "$pwd"; then
+            ui_error "密码错误！请检查后重试。"
+            ui_press_enter
+            return 1
+        fi
+        ui_success "实验已解锁！开始学习吧。"
         ui_press_enter
     fi
 
