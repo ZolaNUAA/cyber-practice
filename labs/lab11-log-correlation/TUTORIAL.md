@@ -44,7 +44,7 @@
 ## 实验环境
 
 ```bash
-./reset-lab.sh lab11
+./student.sh  # 选择对应的实验开始
 ```
 
 **日志源**：

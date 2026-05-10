@@ -46,7 +46,7 @@ SELECT * FROM users WHERE user='admin'--' AND pass='anything'
 ### 启动命令
 
 ```bash
-./reset-lab.sh lab04
+./student.sh  # 选择对应的实验开始
 ```
 
 ### 目标靶场

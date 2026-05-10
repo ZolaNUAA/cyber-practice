@@ -49,7 +49,7 @@ analyst ALL=(root) NOPASSWD: /usr/local/bin/backup-app
 ## 实验环境
 
 ```bash
-./reset-lab.sh lab08
+./student.sh  # 选择对应的实验开始
 docker exec -it priv-lab bash
 
 # 登录身份：analyst（低权限用户）

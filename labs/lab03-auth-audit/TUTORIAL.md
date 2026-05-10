@@ -61,7 +61,7 @@ Mirai 感染了约 50 万台 IoT 设备（摄像头、路由器）。感染方�
 ## 实验环境
 
 ```bash
-./reset-lab.sh lab03
+./student.sh  # 选择对应的实验开始
 ```
 
 **目标**：`ssh student@127.0.0.1 -p 2222`

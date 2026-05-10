@@ -31,7 +31,7 @@ subprocess.run(["ping", "-c", "1", user_input])  # 列表参数，完全不经�
 ## 实验环境
 
 ```bash
-./reset-lab.sh lab07
+./student.sh  # 选择对应的实验开始
 ```
 
 **目标**：`http://127.0.0.1:8087`

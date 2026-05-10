@@ -38,7 +38,8 @@
 
 ```bash
 cd ~/cyber-practice
-./reset-lab.sh lab01
+./student.sh
+# 在菜单中选择 lab01，即可开始逐步引导
 ```
 
 ### 架构说明
@@ -68,7 +69,7 @@ cd ~/cyber-practice
 ### 步骤 1：启动实验环境
 
 ```bash
-./reset-lab.sh lab01
+./student.sh  # 选择对应的实验开始
 ```
 
 观察输出：

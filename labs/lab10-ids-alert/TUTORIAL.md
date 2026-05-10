@@ -49,7 +49,7 @@
 ## 实验环境
 
 ```bash
-./reset-lab.sh lab10
+./student.sh  # 选择对应的实验开始
 ```
 
 **证据文件**：`evidence/ids/eve.json`

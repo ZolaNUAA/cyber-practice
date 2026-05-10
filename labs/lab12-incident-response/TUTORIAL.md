@@ -58,7 +58,7 @@ def export():
 ## 实验环境
 
 ```bash
-./reset-lab.sh lab12
+./student.sh  # 选择对应的实验开始
 ```
 
 **目标服务**：

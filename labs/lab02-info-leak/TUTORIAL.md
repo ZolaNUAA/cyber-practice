@@ -61,7 +61,7 @@ server {
 ## 实验环境
 
 ```bash
-./reset-lab.sh lab02
+./student.sh  # 选择对应的实验开始
 ```
 
 **目标服务**：http://127.0.0.1:8082

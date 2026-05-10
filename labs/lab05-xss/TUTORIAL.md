@@ -39,7 +39,7 @@
 ## 实验环境
 
 ```bash
-./reset-lab.sh lab05
+./student.sh  # 选择对应的实验开始
 ```
 
 ### 目标靶场
