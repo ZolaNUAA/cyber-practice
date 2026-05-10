@@ -121,7 +121,7 @@ verify_lab() {
       ;;
     lab10)
       file_check evidence/ids/eve.json "ids evidence" || return 1
-      jq -e '.alert.signature' evidence/ids/eve.json >/dev/null && ok "ids evidence jq parse" || return 1
+      jq -e -s '.alert.signature' evidence/ids/eve.json >/dev/null && ok "ids evidence jq parse" || return 1
       ;;
     lab11)
       http_check http://127.0.0.1:8082/ "nginx" "Nginx Lab" || return 1
