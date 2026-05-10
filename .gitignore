@@ -21,6 +21,9 @@ __pycache__/
 *.swp
 *.swo
 
+# Per-lab generated files
+labs/*/TUTORIAL.md
+
 # Local environment
 .env
 .env.*
