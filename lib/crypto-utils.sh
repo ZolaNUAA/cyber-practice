@@ -4,7 +4,7 @@
 
 # ── 生成随机密码（12位字母数字） ──────────────────
 crypto_generate_password() {
-    openssl rand -base64 12 2>/dev/null | tr -dc 'a-zA-Z0-9' | head -c 12
+    openssl rand -hex 6 2>/dev/null
 }
 
 # ── 加密实验目录 ───────────────────────────────────

@@ -14,7 +14,6 @@ STUDENT_NAME="kali"
 VERSION="2.0"
 STARTED_AT=""
 EOF
-        progress_set "STARTED_AT" "$(date -Iseconds)"
     fi
     # shellcheck source=/dev/null
     source "$STATE_FILE"

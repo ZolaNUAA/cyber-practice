@@ -107,7 +107,7 @@ else
 
     info "安装基础工具..."
     apt-get install -y -qq \
-        curl wget git jq tree vim nano glow\
+        curl wget git jq tree vim nano \
         netcat-traditional dnsutils \
         openssl python3 python3-pip python3-venv \
         ca-certificates gnupg lsb-release \
@@ -137,7 +137,8 @@ if command -v docker &>/dev/null && docker version &>/dev/null 2>&1; then
     ok "Docker 已安装并运行"
 else
     info "安装 Docker..."
-    # Kali 仓库通常已包含 docker.io
+    # Kali/Ubuntu 仓库通常已包含 docker.io；Compose 插件包名在不同发行版上略有差异。
+    apt-get install -y -qq docker.io docker-compose-plugin 2>/dev/null || \
     apt-get install -y -qq docker.io docker-compose-v2 2>/dev/null || {
         # 回退：使用 Docker 官方仓库
         info "从 Docker 官方仓库安装..."
@@ -152,6 +153,11 @@ else
     info "启动 Docker 服务..."
     systemctl enable --now docker 2>/dev/null || service docker start 2>/dev/null
     ok "Docker 服务已启动"
+fi
+
+if ! docker compose version &>/dev/null; then
+    fail "Docker Compose v2 不可用。请安装 docker-compose-plugin 或 docker-compose-v2。"
+    exit 1
 fi
 
 # 将用户加入 docker 组
