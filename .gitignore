@@ -24,6 +24,9 @@ __pycache__/
 # Per-lab generated files
 labs/*/TUTORIAL.md
 
+# Docs (teacher local)
+docs/
+
 # Local environment
 .env
 .env.*
