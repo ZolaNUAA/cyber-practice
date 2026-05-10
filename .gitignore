@@ -24,3 +24,4 @@ __pycache__/
 # Local environment
 .env
 .env.*
+.tools/
