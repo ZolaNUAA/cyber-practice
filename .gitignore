@@ -1,0 +1,26 @@
+# Runtime output
+logs/
+pcaps/
+reports/
+evidence/ids/*
+evidence/logs/*
+evidence/incident/*
+
+# Keep evidence directories if users create them
+!evidence/ids/
+!evidence/ids/.gitkeep
+!evidence/logs/
+!evidence/logs/.gitkeep
+!evidence/incident/
+!evidence/incident/.gitkeep
+
+# Python/cache/editor artifacts
+__pycache__/
+*.pyc
+.DS_Store
+*.swp
+*.swo
+
+# Local environment
+.env
+.env.*

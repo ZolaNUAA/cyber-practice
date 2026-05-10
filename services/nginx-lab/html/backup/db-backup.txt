@@ -1,0 +1,4 @@
+training_db_host=127.0.0.1
+training_db_user=app_readonly
+training_db_note=demo secret for lab02 only; rotate and remove exposed backups
+
