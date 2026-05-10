@@ -3,9 +3,11 @@
 # 将全新的 Kali VM 变成完整的 cyber-practice 教学环境
 #
 # 用法:
-#   sudo ./setup-lab-vm.sh                 # 完整部署
+#   sudo ./setup-lab-vm.sh                 # 完整部署（首次自动从 GitHub 克隆）
 #   sudo ./setup-lab-vm.sh --skip-tools     # 跳过工具安装（已装过）
 #   sudo ./setup-lab-vm.sh --student-image  # 部署完直接制作学生镜像
+#
+# 首次运行时会自动从 GitHub 克隆所有文件，无需手动 clone
 #
 # 此脚本会:
 #   1. 安装所有需要的系统工具和 Kali 安全工具
@@ -19,6 +21,24 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
+
+REPO_URL="https://github.com/ZolaNUAA/cyber-practice.git"
+
+# ── 如果还没有项目文件，从 GitHub 克隆 ─────────────
+if [[ ! -f "student.sh" || ! -d "labs" ]]; then
+    echo -e "\n[1/1] 从 GitHub 克隆实验内容..."
+    if ! command -v git &>/dev/null; then
+        echo "❌ git 未安装，请先运行: apt-get install git"
+        exit 1
+    fi
+    # 克隆到临时目录再移动，避免覆盖已有文件
+    TEMP_DIR=$(mktemp -d /tmp/cyber-practice.XXXXXX)
+    git clone --depth=1 "$REPO_URL" "$TEMP_DIR"
+    # 移动所有文件到当前目录
+    cp -r "$TEMP_DIR/"* "$TEMP_DIR"/.[!.]* "$ROOT_DIR/" 2>/dev/null || true
+    rm -rf "$TEMP_DIR"
+    echo "✅ 克隆完成"
+fi
 
 # ── 参数解析 ───────────────────────────────────────
 SKIP_TOOLS=false
@@ -87,7 +107,7 @@ else
 
     info "安装基础工具..."
     apt-get install -y -qq \
-        curl wget git jq tree vim nano \
+        curl wget git jq tree vim nano glow\
         netcat-traditional dnsutils \
         openssl python3 python3-pip python3-venv \
         ca-certificates gnupg lsb-release \

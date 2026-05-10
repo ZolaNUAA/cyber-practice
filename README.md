@@ -6,12 +6,16 @@
 
 ## 🚀 一键部署（全新 Kali VM）
 
+下载 `setup-lab-vm.sh`，放入 Kali VM，直接运行：
+
 ```bash
-cd ~/cyber-practice
 sudo ./setup-lab-vm.sh
 ```
 
+首次运行会自动从 GitHub 克隆所有文件，**无需手动 git clone**。
+
 这会自动完成：
+- 自动克隆 GitHub 上的所有实验文件
 - 安装所有需要的工具（nmap, burpsuite, wireshark, jq 等）
 - 安装 Docker 并配置权限
 - 拉取所有镜像（nginx, juice-shop, webgoat）
