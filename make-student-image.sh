@@ -26,7 +26,14 @@ info() { echo -e "  ${BLUE}ℹ${RESET}  $1"; }
 
 # 跳过确认的参数
 AUTO_CONFIRM=false
-[[ "${1:-}" == "--yes" || "${1:-}" == "-y" ]] && AUTO_CONFIRM=true
+case "${1:-}" in
+    --yes|-y) AUTO_CONFIRM=true ;;
+    --help|-h)
+        echo "用法: ./make-student-image.sh [--yes]"
+        echo "  --yes, -y   跳过确认提示"
+        exit 0
+        ;;
+esac
 
 echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════╗${RESET}"
 echo -e "${BOLD}${CYAN}║${RESET}            ${BOLD}📦 制作学生 VM 镜像${RESET}                         ${BOLD}${CYAN}║${RESET}"
