@@ -137,8 +137,10 @@ progress_unlock_next() {
     lab_num=$((10#${lab_num} + 1))
     local next_lab
     next_lab=$(printf "lab%02d" "$lab_num")
-    # 如果下一个实验目录存在，解锁它
-    if [[ -d "${CYBER_PRACTICE_ROOT:-$HOME/cyber-practice}/labs/${next_lab}"* ]]; then
+    # 查找匹配的实验目录（lab04 → lab04-sqli）
+    local next_dir; next_dir=$(find "${CYBER_PRACTICE_ROOT:-$HOME/cyber-practice}/labs" \
+        -maxdepth 1 -type d -name "${next_lab}-*" 2>/dev/null | head -1)
+    if [[ -n "$next_dir" ]]; then
         local status; status=$(progress_lab_status "$next_lab")
         if [[ "$status" == "locked" || -z "$status" ]]; then
             progress_set "LAB_STATUS_${next_lab//-/_}" "unlocked"
