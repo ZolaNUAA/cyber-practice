@@ -19,7 +19,7 @@ crypto_encrypt_lab() {
 
     # 检查是否有可加密的内容
     local dirs_to_pack=()
-    for d in steps hints checks; do
+    for d in steps hints checks tutorial; do
         [[ -d "$lab_dir/$d" ]] && dirs_to_pack+=("$d")
     done
 
