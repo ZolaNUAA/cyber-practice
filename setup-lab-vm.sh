@@ -19,42 +19,15 @@
 
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$ROOT_DIR"
-
 REPO_URL="https://github.com/ZolaNUAA/cyber-practice.git"
 KALI_MIRROR="${KALI_MIRROR:-http://mirrors.ustc.edu.cn/kali}"
 DOCKER_APT_MIRROR="${DOCKER_APT_MIRROR:-https://mirrors.aliyun.com/docker-ce/linux/debian}"
 DOCKER_DEBIAN_CODENAME="${DOCKER_DEBIAN_CODENAME:-bookworm}"
 CHINA_MIRRORS="${CHINA_MIRRORS:-true}"
-SKIP_TOOLS=false
-MAKE_STUDENT_IMAGE=false
-
-# ── 参数解析 ───────────────────────────────────────
-for arg in "$@"; do
-    case "$arg" in
-        --skip-tools) SKIP_TOOLS=true ;;
-        --student-image) MAKE_STUDENT_IMAGE=true ;;
-        --no-china-mirrors) CHINA_MIRRORS=false ;;
-        --help|-h)
-            echo "用法: sudo ./setup-lab-vm.sh [选项]"
-            echo "  --skip-tools          跳过工具安装"
-            echo "  --student-image       完成后制作学生镜像"
-            echo "  --no-china-mirrors    不切换国内 apt/Docker 加速源"
-            echo
-            echo "环境变量:"
-            echo "  KALI_MIRROR           Kali apt 源，默认: $KALI_MIRROR"
-            echo "  DOCKER_APT_MIRROR     Docker CE apt 源，默认: $DOCKER_APT_MIRROR"
-            echo "  DOCKER_DEBIAN_CODENAME Docker CE Debian 发行版名，默认: $DOCKER_DEBIAN_CODENAME"
-            exit 0
-            ;;
-        *)
-            echo "未知参数: $arg"
-            echo "运行 --help 查看用法"
-            exit 1
-            ;;
-    esac
-done
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+ACTUAL_USER="${SUDO_USER:-${USER:-root}}"
+ACTUAL_HOME=$(eval echo "~$ACTUAL_USER")
 
 # ── 颜色 ───────────────────────────────────────────
 RED='\033[31m'; GREEN='\033[32m'; YELLOW='\033[33m'
@@ -68,16 +41,44 @@ info()  { echo -e "  ${BLUE}ℹ${RESET}  $1"; }
 TOTAL_STEPS=8
 ERRORS=()
 
+# ── 参数解析 ───────────────────────────────────────
+TEACHER_MODE=false
+SKIP_TOOLS=false
+for arg in "$@"; do
+    case "$arg" in
+        --teacher-mode) TEACHER_MODE=true ;;
+        --skip-tools) SKIP_TOOLS=true ;;
+        --student-image) TEACHER_MODE=false ;; # Backward-compatible no-op; student image is now the default.
+        --no-china-mirrors) CHINA_MIRRORS=false ;;
+        --help|-h)
+            echo "用法: sudo ./setup-lab-vm.sh [选项]"
+            echo "  --teacher-mode        保留教师模式（不加密实验、不清理教师文件）"
+            echo "  --skip-tools          跳过工具安装（已装过）"
+            echo "  --student-image       兼容旧参数；当前默认就是学生镜像模式"
+            echo "  --no-china-mirrors    不切换国内 apt/Docker 加速源"
+            echo
+            echo "默认行为：学生模式部署 → 克隆到 ~/cyber-practice 并自动配置"
+            echo
+            echo "环境变量:"
+            echo "  KALI_MIRROR            Kali apt 源，默认: $KALI_MIRROR"
+            echo "  DOCKER_APT_MIRROR      Docker CE apt 源，默认: $DOCKER_APT_MIRROR"
+            echo "  DOCKER_DEBIAN_CODENAME Docker CE Debian 发行版名，默认: $DOCKER_DEBIAN_CODENAME"
+            exit 0
+            ;;
+        *)
+            echo "未知参数: $arg"
+            echo "运行 --help 查看用法"
+            exit 1
+            ;;
+    esac
+done
+
 # ── 权限检查 ───────────────────────────────────────
 if [[ "$(id -u)" -ne 0 ]]; then
     echo -e "${RED}此脚本需要 root 权限运行。${RESET}"
     echo "请使用: sudo ./setup-lab-vm.sh"
     exit 1
 fi
-
-# 获取实际用户（即使通过 sudo 运行）
-ACTUAL_USER="${SUDO_USER:-$USER}"
-ACTUAL_HOME=$(eval echo "~$ACTUAL_USER")
 
 configure_china_mirrors() {
     if ! $CHINA_MIRRORS; then
@@ -135,18 +136,27 @@ DOCKERJSON
 }
 
 # ── 如果还没有项目文件，从 GitHub 克隆 ─────────────
-if [[ ! -f "student.sh" || ! -d "labs" ]]; then
-    echo -e "\n[1/1] 从 GitHub 克隆实验内容..."
+# 默认创建 ~/cyber-practice 目录并在其中部署。
+PROJECT_DIR="$ACTUAL_HOME/cyber-practice"
+
+if [[ ! -f "$PROJECT_DIR/student.sh" || ! -d "$PROJECT_DIR/labs" ]]; then
+    echo -e "\n[1/1] 从 GitHub 克隆实验内容到 ~/cyber-practice ..."
     configure_china_mirrors
     install_git_if_missing
-    # 克隆到临时目录再移动，避免覆盖已有文件
-    TEMP_DIR=$(mktemp -d /tmp/cyber-practice.XXXXXX)
-    git clone --depth=1 "$REPO_URL" "$TEMP_DIR"
-    # 移动所有文件到当前目录
-    cp -r "$TEMP_DIR/"* "$TEMP_DIR"/.[!.]* "$ROOT_DIR/" 2>/dev/null || true
-    rm -rf "$TEMP_DIR"
-    echo "✅ 克隆完成"
+
+    if [[ -d "$PROJECT_DIR" ]]; then
+        warn "~/cyber-practice 已存在，先备份..."
+        mv "$PROJECT_DIR" "$PROJECT_DIR.bak.$(date +%Y%m%d%H%M%S)"
+    fi
+
+    echo "克隆中（首次需要几分钟）..."
+    git clone --depth=1 "$REPO_URL" "$PROJECT_DIR"
+    echo "克隆完成"
 fi
+
+# 切换到项目目录，后续所有操作都在此目录进行。
+ROOT_DIR="$PROJECT_DIR"
+cd "$ROOT_DIR"
 
 echo -e "${BOLD}${CYAN}╔══════════════════════════════════════════════════════╗${RESET}"
 echo -e "${BOLD}${CYAN}║${RESET}     ${BOLD}Cyber Practice Lab — 一键环境部署${RESET}              ${BOLD}${CYAN}║${RESET}"
@@ -391,16 +401,29 @@ if [[ "$ACTUAL_USER" != "root" ]]; then
     echo
 fi
 
+if $TEACHER_MODE; then
+    echo -e "  ${BOLD}教师模式已启用${RESET}：保留所有文件，未加密实验内容"
+    echo -e "  ${BOLD}下一步:${RESET}"
+    echo -e "    ./teacher.sh                    # 启动教师管理界面"
+    echo -e "    ./student.sh                    # 启动学生引导系统"
+else
+    if [[ ${#ERRORS[@]} -eq 0 ]]; then
+        echo -e "  ${BOLD}环境验收通过，下一步制作学生镜像${RESET}"
+    else
+        echo -e "  ${YELLOW}存在部署错误，跳过学生镜像制作，避免分发不可用环境。${RESET}"
+    fi
+fi
+
 # ─────────────────────────────────────────────────────
-# 可选：制作学生镜像
+# 制作学生镜像（默认行为）
 # ─────────────────────────────────────────────────────
-if $MAKE_STUDENT_IMAGE; then
+if ! $TEACHER_MODE && [[ ${#ERRORS[@]} -eq 0 ]]; then
     echo -e "${BOLD}${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     echo -e "${BOLD}制作学生分发镜像...${RESET}"
     echo
 
     if [[ -x "$ROOT_DIR/make-student-image.sh" ]]; then
-        bash "$ROOT_DIR/make-student-image.sh"
+        bash "$ROOT_DIR/make-student-image.sh" --yes
         echo
         echo -e "${GREEN}${BOLD}✅ 学生镜像准备完成！${RESET}"
         echo

@@ -11,15 +11,15 @@ title: 网络安全实战 - 课程介绍
 mdc: true
 ---
 
-# 网络安全实战课程
+# 网络安全实践课程
 
 ### Cyber Practice Lab
 
 <Transform :scale="0.85">
 
-**南京航空航天大学** · 信息安全方向
+**南京航空航天大学** · 信息安全
 
-赵彦超 · 陈兵
+赵彦超
 
 </Transform>
 
@@ -49,21 +49,23 @@ mdc: true
 
 - 共 **12 个实验**，每周在 QQ 群发布 **2 个实验的密码**，**完成 2 个**即可
 - 实验在本地 Kali 环境（`127.0.0.1`）进行
-- **无需在实验平台上提交**，完成后在超星上传报告
+- 在系统里看到作业，**每周三提交上一周的两个实验报告**
 
-## 助教团队
+---
 
-<div class="grid grid-cols-5 gap-4 items-center justify-center text-center">
+# 助教团队
 
-<img src="./liye.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
-<img src="./libowen.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
-<img src="./yulei.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
-<img src="./yangchaoyue.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
-<img src="./zhoujianwen.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
+<div class="grid grid-cols-5 gap-6 items-center justify-center text-center py-4">
 
-<div class="text-sm font-medium">李晔</div>
-<div class="text-sm font-medium">李博文</div>
+<img src="./liye.png" class="w-20 h-20 rounded-full object-cover" />
+<img src="./libowen.png" class="w-20 h-20 rounded-full object-cover" />
+<img src="./yulei.png" class="w-20 h-20 rounded-full object-cover" />
+<img src="./yangchaoyue.png" class="w-20 h-20 rounded-full object-cover" />
+<img src="./zhoujianwen.png" class="w-20 h-20 rounded-full object-cover" />
+
 <div class="text-sm font-medium">于磊</div>
+<div class="text-sm font-medium">李博文</div>
+<div class="text-sm font-medium">李晔</div>
 <div class="text-sm font-medium">杨超越</div>
 <div class="text-sm font-medium">周健文</div>
 
@@ -108,38 +110,74 @@ mdc: true
 - 📝 **技术报告写作**，锻炼表达与复盘能力
 
 ## 你将掌握
-
 | 工具 | 用途 |
 |------|------|
 | nmap / curl | 侦察与指纹识别 |
 | Burp Suite | Web 漏洞测试 |
-| Wireshark / tcpdump | 流量分析与 C2 检测 |
-| jq / 日志分析 | IDS 告警与日志关联 |
+| Wireshark | 流量分析与 C2 检测 |
+| jq | 日志分析与告警分诊 |
+
+---
+
+# 为什么使用 Kali Linux？
+
+### Kali 是"黑客工具箱"
+
+- 📦 **预装 600+ 安全工具**：nmap、Wireshark、Burp Suite、sqlmap、msfconsole…
+- 🔧 **开箱即用**：无需逐个安装配置，节省大量时间
+- 🧪 **专为渗透测试设计**：系统级权限、定制内核、裸机性能
+- 🐧 **基于 Debian**：稳定、可靠、社区活跃
+
+### 学生本地环境优势
+
+| 对比项 | 普通虚拟机 | 本地 Kali 实验环境 |
+|--------|-----------|-------------------|
+| 工具安装 | 需自行配置 | 课程镜像已集成 |
+| 网络隔离 | 难以保证 | 127.0.0.1 绝对安全 |
+| 实验记录 | 难以追溯 | 本地保存随时复盘 |
+
+> 所有攻击限制在 `127.0.0.1`，不侵犯任何真实系统
 
 ---
 
 # 实验环境架构
 
-<img src="./lab-infrastructure.svg" width="900" />
+<img src="./lab-infrastructure.svg" width="100%" />
 
 ---
 
 # 实验列表
 
-| # | 主题 | 核心技能 | 靶场 |
-|---|------|---------|------|
-| Lab01 | 侦察与资产发现 | nmap 扫描、指纹识别 | 所有服务 |
-| Lab02 | Web 信息泄露 | 目录发现、日志分析 | nginx-lab |
-| Lab03 | 认证审计 | SSH 暴力破解、日志取证 | ssh-lab |
-| Lab04 | SQL 注入 | UNION 注入、盲注 | Juice Shop / WebGoat |
-| Lab05 | XSS 与会话安全 | CSP、Cookie 属性 | Juice Shop / WebGoat |
-| Lab06 | 文件上传漏洞 | 绕过、webshell | upload-lab |
-| Lab07 | 命令注入 | shell=True 危险、RCE | cmd-lab |
-| Lab08 | Linux 特权最小化 | sudo 审计、权限分析 | priv-lab |
-| Lab09 | 流量分析 | tcpdump、Wireshark、C2 检测 | traffic-lab |
-| Lab10 | IDS 告警分析 | jq、告警分诊 | eve.json |
-| Lab11 | 日志关联 | 多源日志、攻击时间线 | 所有日志 |
-| Lab12 | 事件响应 | 证据收集、报告撰写 | incident-lab |
+| # | 主题 | 靶场 |
+|---|------|------|
+| 01-02 | 侦察·信息泄露 | nginx-lab |
+| 03-04 | 认证审计·SQL注入 | ssh-lab / Juice Shop |
+| 05-06 | XSS·文件上传 | Juice Shop / upload-lab |
+| 07-08 | 命令注入·权限提升 | cmd-lab / priv-lab |
+| 09-10 | 流量分析·IDS告警 | traffic-lab / eve.json |
+| 11-12 | 日志关联·事件响应 | incident-lab |
+
+---
+
+# 实验关联：完整攻击链
+
+```
+侦察 (01-02)
+    ↓
+初始访问 (03-04 认证、SQL注入)
+    ↓
+Web漏洞利用 (05-06 XSS、文件上传)
+    ↓
+后渗透 (07-08 命令注入、权限提升)
+    ↓
+检测与追踪 (09-11 流量分析、日志关联)
+    ↓
+事件响应 (12 综合事件响应)
+```
+
+**前 8 个实验** → 站在攻击者角度，从零搭建攻击链
+
+**后 4 个实验** → 站在防御者角度，检测、分析、响应攻击
 
 ---
 
@@ -194,46 +232,28 @@ cd ~/cyber-practice
 
 # 靶场服务一览
 
-| 服务 | 地址 | 说明 |
+| 服务 | 端口 | 类型 |
 |------|------|------|
-| nginx-lab | `http://127.0.0.1:8082` | Web 信息泄露、备份目录 |
-| ssh-lab | `ssh student@127.0.0.1 -p 2222` | 弱密码认证（密码：Student123）|
-| upload-lab | `http://127.0.0.1:8086` | 文件上传漏洞 |
-| cmd-lab | `http://127.0.0.1:8087` | 命令注入 RCE |
-| traffic-lab | `http://127.0.0.1:8089` | 流量分析、C2 信标 |
-| incident-lab | `http://127.0.0.1:8092` | 事件响应综合靶机 |
-| Juice Shop | `http://127.0.0.1:3000` | SQL 注入、XSS 靶场 |
-| WebGoat | `http://127.0.0.1:8080/WebGoat` | OWASP 官方靶场 |
+| nginx-lab | :8082 | Web 信息泄露 |
+| ssh-lab | :2222 | 弱密码 SSH |
+| upload-lab | :8086 | 文件上传漏洞 |
+| cmd-lab | :8087 | 命令注入 RCE |
+| Juice Shop | :3000 | SQL 注入、XSS |
+| WebGoat | :8080 | OWASP 靶场 |
 
 ---
 
 # 实验报告要求
 
-## 评分维度（100分）
+| 维度 | 分值 |
+|------|------|
+| 操作完成度 | 20 |
+| 证据收集 | 25 |
+| 技术原理阐述 | 20 |
+| 防御方案 | 20 |
+| 报告质量 | 15 |
 
-| 维度 | 分值 | 要求 |
-|------|------|------|
-| 操作完成度 | 20 | 正确启动实验，完成核心任务 |
-| 证据收集 | 25 | 截图、日志、命令输出完整 |
-| 技术原理阐述 | 20 | 准确解释漏洞原理和攻击过程 |
-| 防御方案 | 20 | 可行、完整、可落地 |
-| 报告质量 | 15 | 结构清晰、分析深度 |
-
-## 常见错误
-
-```
-❌ 报告只有截图没有说明文字
-❌ 复制工具输出而不分析其含义
-❌ 防御方案过于笼统（如"加强密码策略"）
-❌ 未回答思考题
-❌ 使用 LLM 生成千篇一律的通用回答
-```
-
-## 提交方式
-
-- 实验完成后查阅 `tutorial/TUTORIAL.md` 中的**交付物**章节
-- 按要求准备报告，在**超星平台**提交
-- 无需在实验平台上提交
+> 常见错误：只有截图、分析不够深入、防御方案笼统、未答思考题
 
 ---
 
@@ -269,25 +289,27 @@ docker logs nginx-lab 2>&1 | tail -20
 
 # 学习建议
 
-## 进攻者思维
+## 思维方式
 
-> "你要知道攻击是怎么发生的，才能知道如何防御它。"
+**🗡️ 进攻者** — 你要知道攻击是怎么发生的，才能知道如何防御它。
 
-- 每个实验先理解**攻击原理**，再动手
-- 关注攻击者的**第一步**是什么（侦察？弱口令？）
-- 尝试理解攻击者的**完整链条**（侦察 → 初始访问 → 横向 → 目标）
+- 理解**攻击原理**再动手
+- 关注攻击者**第一步**（侦察？弱口令？）
+- 完整链条：侦察 → 初始访问 → 横向 → 目标
 
-## 防御者思维
+**🛡️ 防御者** — 做完攻击实验后，问自己怎么发现这种攻击？
 
-- 做完攻击实验后，问自己：**如果我是防守方，怎么发现这种攻击？**
-- 每个实验都要求你提出防御方案，这是核心输出
+- 每个实验要求提出**防御方案**
+- 这是核心输出
+
+---
 
 ## 记录习惯
 
 - 边做边截图，不要事后补
 - 命令输出直接复制保存
 - 日志分析要标注关键行
-- 做完实验后**主动关闭虚拟机**，节省服务器资源
+- 做完实验后**关闭虚拟机**，节省资源
 
 ---
 

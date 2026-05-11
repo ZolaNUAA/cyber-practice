@@ -200,7 +200,7 @@ fi
 echo -e "${BOLD}[7/8]${RESET} 设置文件权限..."
 
 # 核心脚本
-chmod +x student.sh start-lab.sh stop-lab.sh reset-lab.sh check-env.sh install-kali.sh prepare-lab-data.sh verify-lab-env.sh 2>/dev/null || true
+chmod +x student.sh start-lab.sh stop-lab.sh reset-lab.sh check-env.sh install-kali.sh prepare-lab-data.sh verify-lab-env.sh update-system.sh 2>/dev/null || true
 
 # 恢复 lab10/lab11/lab12 需要的预置证据。上面的清理会删除 evidence 下的运行时文件，
 # 但学生镜像仍需要这些样本文件才能按教程直接开始实验。
@@ -231,7 +231,9 @@ REQUIRED_FILES=(
     "reset-lab.sh:实验重置"
     "check-env.sh:环境检查"
     "prepare-lab-data.sh:实验数据准备"
+    "update-system.sh:系统更新"
     "docker-compose.yml:Docker配置"
+    "STUDENT_GUIDE.md:学生使用教程"
     "lib/progress-lib.sh:进度库"
     "lib/ui-utils.sh:UI库"
     "lib/guide-framework.sh:引导框架"

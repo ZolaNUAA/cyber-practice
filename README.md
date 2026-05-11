@@ -65,6 +65,8 @@ sudo ./setup-lab-vm.sh --student-image
 
 ## 👨‍🎓 学生使用
 
+完整学生教程见：[STUDENT_GUIDE.md](STUDENT_GUIDE.md)
+
 学生导入 OVA 后：
 
 ```bash
@@ -73,6 +75,28 @@ cd ~/cyber-practice
 ```
 
 学生看到进度仪表盘，按 Enter 进入实验，一步一步完成。
+
+已有镜像更新实验系统：
+
+```bash
+cd ~/cyber-practice
+./update-system.sh
+```
+
+如果旧镜像里还没有 `update-system.sh`，先下载一次：
+
+```bash
+cd ~/cyber-practice
+curl -LO https://raw.githubusercontent.com/ZolaNUAA/cyber-practice/main/update-system.sh
+chmod +x update-system.sh
+./update-system.sh
+```
+
+只更新脚本和课程文件，不重建 Docker 镜像：
+
+```bash
+./update-system.sh --skip-docker
+```
 
 ## 👨‍🏫 教师使用
 

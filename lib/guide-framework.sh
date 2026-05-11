@@ -234,29 +234,34 @@ guide_show_solution() {
 
 # ── 主引导循环 ─────────────────────────────────────
 guide_run() {
+    local start_step="${1:-}"
     local current; current=$(progress_lab_current_step "$GUIDE_LAB_ID")
     current=${current:-0}
 
     # 找到下一个未完成的步骤
-    local next_step=$((current + 1))
+    local next_step="${start_step:-$((current + 1))}"
     if [[ $next_step -gt $GUIDE_TOTAL_STEPS ]]; then
         next_step=$GUIDE_TOTAL_STEPS
+    elif [[ $next_step -lt 1 ]]; then
+        next_step=1
     fi
 
     while [[ $next_step -le $GUIDE_TOTAL_STEPS ]]; do
         GUIDE_CURRENT_STEP=$next_step
 
-        # 如果已经完成，检查下一步
-        if progress_is_step_done "$GUIDE_LAB_ID" "$(printf '%02d' "$next_step")"; then
-            next_step=$((next_step + 1))
-            continue
-        fi
-
         # 显示当前步骤
         guide_show_step "$next_step"
 
+        local step_id; step_id=$(printf '%02d' "$next_step")
+        local step_done=false
+        if progress_is_step_done "$GUIDE_LAB_ID" "$step_id"; then
+            step_done=true
+            ui_dim "  此步骤已完成，当前为回看模式。"
+            echo
+        fi
+
         # 交互提示
-        echo -ne "  ${C_DIM}[Enter] 继续  [h] 提示  [b] 上一步  [q] 退出${C_RESET}"
+        echo -ne "  ${C_DIM}[Enter] 下一步  [h] 提示  [b] 上一步  [r] 从头回看  [q] 退出${C_RESET}"
 
         local choice
         read -r choice
@@ -269,7 +274,14 @@ guide_run() {
             b|B)
                 if [[ $next_step -gt 1 ]]; then
                     next_step=$((next_step - 1))
+                else
+                    ui_warn "已经是第一步。"
+                    ui_press_enter
                 fi
+                continue
+                ;;
+            r|R)
+                next_step=1
                 continue
                 ;;
             q|Q)
@@ -279,24 +291,31 @@ guide_run() {
                 ;;
         esac
 
-        # 运行验证
-        guide_run_check "$next_step"
+        if ! $step_done; then
+            # 运行验证
+            guide_run_check "$next_step"
 
-        # 标记完成
-        local step_id; step_id=$(printf '%02d' "$next_step")
-        progress_mark_step_done "$GUIDE_LAB_ID" "$step_id"
+            # 标记完成
+            progress_mark_step_done "$GUIDE_LAB_ID" "$step_id"
 
-        # 显示步骤完成
-        echo
-        ui_success "步骤 ${next_step}/${GUIDE_TOTAL_STEPS} 完成！"
+            # 显示步骤完成
+            echo
+            ui_success "步骤 ${next_step}/${GUIDE_TOTAL_STEPS} 完成！"
+        fi
 
         # 如果是最后一步，完成实验
         if [[ $next_step -eq $GUIDE_TOTAL_STEPS ]]; then
-            guide_finish_lab
+            if [[ "$(progress_lab_status "$GUIDE_LAB_ID")" != "completed" ]]; then
+                guide_finish_lab
+            else
+                ui_press_enter "已到最后一步，按 Enter 返回..."
+            fi
             return 0
         fi
 
-        ui_press_enter "按 Enter 进入下一步..."
+        if ! $step_done; then
+            ui_press_enter "按 Enter 进入下一步..."
+        fi
         next_step=$((next_step + 1))
     done
 
@@ -367,8 +386,31 @@ guide_show_overview() {
     done
 
     echo
-    echo -ne "  ${C_DIM}[Enter] 继续  [q] 返回${C_RESET}"
-    read -r
+    echo -ne "  ${C_DIM}[Enter] 继续  [r] 从第一步重看  [数字] 跳到步骤  [q] 返回${C_RESET}"
+    read -r overview_choice
+
+    case "$overview_choice" in
+        q|Q)
+            return 1
+            ;;
+        r|R)
+            guide_run 1
+            return 1
+            ;;
+        "")
+            return 0
+            ;;
+        *)
+            if [[ "$overview_choice" =~ ^[0-9]+$ ]] && \
+               [[ "$overview_choice" -ge 1 && "$overview_choice" -le "$GUIDE_TOTAL_STEPS" ]]; then
+                guide_run "$overview_choice"
+                return 1
+            fi
+            ui_warn "无效输入: $overview_choice"
+            ui_press_enter
+            return 1
+            ;;
+    esac
 }
 
 # ── 入口：开始引导 ─────────────────────────────────
@@ -444,9 +486,9 @@ guide_start() {
 
     # 如果已完成，显示总结
     if [[ "$status" == "completed" ]]; then
-        guide_show_overview
-        ui_info "此实验已完成。回顾完毕。"
-        ui_press_enter
+        if guide_show_overview; then
+            guide_run 1
+        fi
         return 0
     fi
 
