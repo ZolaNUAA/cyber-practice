@@ -319,11 +319,26 @@ guide_finish_lab() {
     ui_box_end
 
     echo
-    # 生成提交文件
-    local student_name; student_name=$(progress_get "STUDENT_NAME")
-    local submit_file; submit_file=$(progress_generate_submit "$GUIDE_LAB_ID" "${student_name:-kali}")
-    ui_success "提交文件已生成: submit/$(basename "$submit_file")"
-    ui_info "请将此文件提交给老师。"
+    # 报告提交指引
+    echo -e "${C_BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
+    echo -e "  ${C_BOLD}${C_GREEN}📩 实验报告提交${C_RESET}"
+    echo -e "${C_BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
+    echo
+    echo -e "  ${C_BOLD}请完成以下交付物并提交给老师：${C_RESET}"
+    echo
+    echo -e "  1. ${C_BOLD}实验报告${C_RESET}（Markdown 或 PDF 格式）"
+    echo -e "     报告应包含："
+    echo -e "       • 实验步骤记录（每一步做了什么）"
+    echo -e "       • 发现的问题和解决方案"
+    echo -e "       • 思考题答案"
+    echo -e "       • 学习心得"
+    echo
+    echo -e "  2. ${C_BOLD}截图/证据${C_RESET}（如有要求）"
+    echo
+    echo -e "  ${C_DIM}提交方式：将报告文件放入 submit/ 目录${C_RESET}"
+    echo -e "           或按老师指定的方式提交"
+    echo
+    echo -e "${C_BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
 
     echo
     ui_press_enter "按 Enter 返回..."
