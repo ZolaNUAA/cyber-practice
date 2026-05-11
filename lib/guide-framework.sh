@@ -324,19 +324,17 @@ guide_finish_lab() {
     echo -e "  ${C_BOLD}${C_GREEN}📩 实验报告提交${C_RESET}"
     echo -e "${C_BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
     echo
-    echo -e "  ${C_BOLD}请完成以下交付物并提交给老师：${C_RESET}"
+    echo -e "  请查看 ${C_YELLOW}tutorial/TUTORIAL.md${C_RESET} 中的"
+    echo -e "  ${C_BOLD}「交付物」章节${C_RESET}，按要求准备并提交。"
     echo
-    echo -e "  1. ${C_BOLD}实验报告${C_RESET}（Markdown 或 PDF 格式）"
-    echo -e "     报告应包含："
-    echo -e "       • 实验步骤记录（每一步做了什么）"
-    echo -e "       • 发现的问题和解决方案"
-    echo -e "       • 思考题答案"
-    echo -e "       • 学习心得"
+    echo -e "  ${C_DIM}常见交付物类型：${C_RESET}"
+    echo -e "    • 实验报告（Markdown/PDF）"
+    echo -e "    • 截图/操作证据"
+    echo -e "    • 配置文件/代码"
+    echo -e "    • 思考题答案"
     echo
-    echo -e "  2. ${C_BOLD}截图/证据${C_RESET}（如有要求）"
-    echo
-    echo -e "  ${C_DIM}提交方式：将报告文件放入 submit/ 目录${C_RESET}"
-    echo -e "           或按老师指定的方式提交"
+    echo -e "  提交方式：将文件放入 ${C_YELLOW}submit/${C_RESET} 目录"
+    echo -e "           或按老师指定的其他方式"
     echo
     echo -e "${C_BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
 
