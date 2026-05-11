@@ -53,7 +53,21 @@ mdc: true
 
 ## 助教团队
 
-李晔 · 李博文 · 于磊 · 杨超越 · 周健文
+<div class="grid grid-cols-5 gap-4 items-center justify-center text-center">
+
+<img src="./liye.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
+<img src="./libowen.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
+<img src="./yulei.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
+<img src="./yangchaoyue.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
+<img src="./zhoujianwen.png" class="w-24 h-24 rounded-full object-cover mx-auto" />
+
+<div class="text-sm font-medium">李晔</div>
+<div class="text-sm font-medium">李博文</div>
+<div class="text-sm font-medium">于磊</div>
+<div class="text-sm font-medium">杨超越</div>
+<div class="text-sm font-medium">周健文</div>
+
+</div>
 
 > 有问题可在 QQ 群随时提问，助教会及时答复
 
@@ -106,7 +120,7 @@ mdc: true
 
 # 实验环境架构
 
-![实验室架构](lab-infrastructure.svg)
+<img src="./lab-infrastructure.svg" width="900" />
 
 ---
 
