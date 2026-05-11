@@ -106,7 +106,7 @@ mdc: true
 
 # 实验环境架构
 
-![实验室架构](diagrams/lab-infrastructure.svg)
+![实验室架构](lab-infrastructure.svg)
 
 ---
 
