@@ -1,2 +1,0 @@
-database_password=ExamBackupRootCause2026
-api_token=backup-token-should-not-be-public
