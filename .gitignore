@@ -2,6 +2,7 @@
 logs/
 pcaps/
 reports/
+exam/
 evidence/ids/*
 evidence/logs/*
 evidence/incident/*
