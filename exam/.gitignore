@@ -1,0 +1,7 @@
+exam-state.json
+audit-log.jsonl
+latest-*.json
+exam-data/
+final_verify.py
+__pycache__/
+*.pyc

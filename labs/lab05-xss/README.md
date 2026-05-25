@@ -18,7 +18,7 @@ Targets:
 
 ## Tasks
 
-1. Complete a local XSS lesson in WebGoat or Juice Shop.
+1. Complete the reflected and stored XSS lessons in WebGoat A3.
 2. Observe DOM behavior in browser developer tools.
 3. Inspect cookies and identify missing security attributes.
 4. Explain the difference between input filtering and output encoding.
@@ -29,4 +29,3 @@ Targets:
 - XSS evidence screenshot
 - Cookie attribute notes
 - Defense proposal
-

@@ -1,0 +1,23 @@
+services:
+  exam-app:
+    build: ./services/exam-lab
+    container_name: exam-app
+    expose:
+      - "8080"
+    volumes:
+      - ./services/exam-lab/app.py:/app/app.py:ro
+      - ./exam-data/logs:/app/logs
+      - ./exam-data/uploads:/app/uploads
+    restart: unless-stopped
+
+  exam-gateway:
+    image: nginx:1.25-alpine
+    container_name: exam-gateway
+    depends_on:
+      - exam-app
+    ports:
+      - "127.0.0.1:8090:80"
+    volumes:
+      - ./services/exam-gateway/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./services/exam-gateway/html:/usr/share/nginx/html:ro
+    restart: unless-stopped
