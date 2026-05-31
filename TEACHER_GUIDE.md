@@ -4,6 +4,9 @@
 
 All activities are restricted to the local Kali VM and Docker services bound to `127.0.0.1`.
 Students must not scan campus networks, classmates' machines, or Internet hosts.
+When demonstrating commands, keep the target literal as `127.0.0.1` or `localhost`.
+Do not ask students to substitute a campus IP, public IP, domain name, or network segment.
+For class incidents, first collect the student's shell history and screenshots, then confirm whether any command target was outside the local lab boundary.
 
 ## VM Release Workflow
 
@@ -57,4 +60,3 @@ If a student's environment is broken:
 docker system prune -f
 ./start-lab.sh lab04
 ```
-

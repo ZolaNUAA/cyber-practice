@@ -1,5 +1,9 @@
 # Lab 11: Log Correlation
 
+## Safety Boundary
+
+Only generate and analyze activity for `127.0.0.1`, `localhost`, and the course Docker services exposed on local ports. Do not replace course targets with campus IPs, classmates' machines, public IPs, domains, or real websites.
+
 ## Goal
 
 Correlate web, SSH, and application evidence into a timeline.
@@ -38,4 +42,3 @@ find logs evidence/logs -type f -maxdepth 3 -print
 - Timeline
 - Suspicious event list
 - Logging gap analysis
-

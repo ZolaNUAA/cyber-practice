@@ -1,5 +1,9 @@
 # Lab 06: File Upload Risk
 
+## Safety Boundary
+
+Only use this lab against `127.0.0.1`, `localhost`, and the course Docker services exposed on local ports. Do not replace course targets with campus IPs, classmates' machines, public IPs, domains, or real websites.
+
 ## Goal
 
 Understand upload validation, upload directory exposure, and access log evidence.
@@ -34,4 +38,3 @@ tail -n 20 logs/upload/upload.log
 - Upload evidence
 - Log evidence
 - Mitigation checklist
-

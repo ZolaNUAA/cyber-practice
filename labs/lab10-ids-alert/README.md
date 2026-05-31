@@ -1,5 +1,9 @@
 # Lab 10: IDS Alert Analysis
 
+## Safety Boundary
+
+This lab uses local evidence files only. Do not scan, probe, or test campus IPs, classmates' machines, public IPs, domains, or real websites.
+
 ## Goal
 
 Read IDS-style JSON alerts and connect them to web activity.
@@ -33,4 +37,3 @@ jq -r '[.timestamp,.alert.signature,.alert.severity,.http.url] | @tsv' evidence/
 - Alert summary table
 - Triage priority
 - Analyst note
-

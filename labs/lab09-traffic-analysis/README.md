@@ -1,5 +1,9 @@
 # Lab 09: Traffic Analysis
 
+## Safety Boundary
+
+Only capture and generate traffic for `127.0.0.1`, `localhost`, and the course Docker services exposed on local ports. Do not capture campus traffic or scan external IPs, domains, or real websites.
+
 ## Goal
 
 Capture local traffic and extract evidence from HTTP requests.
@@ -35,4 +39,3 @@ curl "http://127.0.0.1:8089/beacon?id=101"
 - PCAP file
 - Wireshark screenshot
 - IOC table
-

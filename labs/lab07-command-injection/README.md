@@ -1,5 +1,9 @@
 # Lab 07: Command Injection
 
+## Safety Boundary
+
+Only use this lab against `127.0.0.1`, `localhost`, and the course Docker services exposed on local ports. Do not replace course targets with campus IPs, classmates' machines, public IPs, domains, or real websites.
+
 ## Goal
 
 Understand why shell command construction with untrusted input is dangerous.
@@ -32,4 +36,3 @@ curl "http://127.0.0.1:8087/?host=127.0.0.1"
 - Normal request evidence
 - Vulnerability explanation
 - Safe implementation recommendation
-

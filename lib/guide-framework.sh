@@ -345,6 +345,8 @@ guide_finish_lab() {
     echo
     echo -e "  请查看 ${C_YELLOW}tutorial/TUTORIAL.md${C_RESET} 中的"
     echo -e "  ${C_BOLD}「交付物」章节${C_RESET}，按要求准备并提交。"
+    echo -e "  ${C_DIM}步骤里的「过程自检」只用于确认操作进度，不作为最终报告思考题。${C_RESET}"
+    echo -e "  ${C_DIM}最终需要回答哪些思考题，以 tutorial/TUTORIAL.md 的「思考题」章节为准。${C_RESET}"
     echo
     echo -e "  ${C_DIM}常见交付物类型：${C_RESET}"
     echo -e "    • 实验报告（Markdown/PDF）"

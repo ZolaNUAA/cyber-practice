@@ -1,5 +1,9 @@
 # Lab 02: Web Information Leakage
 
+## Safety Boundary
+
+Only use this lab against `127.0.0.1`, `localhost`, and the course Docker services exposed on local ports. Do not replace course targets with campus IPs, classmates' machines, public IPs, domains, or real websites.
+
 ## Goal
 
 Find exposed backup/configuration files and propose web server hardening.
@@ -34,4 +38,3 @@ tail -n 20 logs/nginx/access.log
 - Log evidence
 - Risk analysis
 - Hardened Nginx rule proposal
-

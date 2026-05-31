@@ -81,11 +81,40 @@ show_welcome() {
         echo -e "  • 卡住时按 ${C_BOLD}h${C_RESET} 获取提示"
         echo -e "  • 完成实验后自动生成提交文件"
         echo
-        echo -e "  ${C_DIM}所有操作限制在 127.0.0.1 本地环境。${C_RESET}"
-        echo -e "  ${C_DIM}禁止扫描外部网络或他人机器。${C_RESET}"
+        echo -e "  ${C_BOLD}${C_YELLOW}安全边界${C_RESET}"
+        echo -e "  ${C_YELLOW}• 所有扫描、攻击、payload 测试只允许对 127.0.0.1 / localhost 执行。${C_RESET}"
+        echo -e "  ${C_YELLOW}• 禁止扫描校园网、同学机器、公网 IP、真实网站或任何非授权目标。${C_RESET}"
+        echo -e "  ${C_YELLOW}• 课程命令中的目标地址不得替换为外部地址。${C_RESET}"
         echo
-        ui_press_enter "按 Enter 开始..."
+        ui_press_enter "按 Enter 继续..."
         progress_set "STARTED_AT" "$(date -Iseconds)"
+    fi
+}
+
+# ── 安全边界确认 ──────────────────────────────────
+ensure_safety_ack() {
+    local acked_at; acked_at=$(progress_get "SAFETY_ACK_AT")
+    if [[ -z "$acked_at" || "$acked_at" == '""' ]]; then
+        ui_clear
+        ui_header "实验安全边界确认"
+        echo
+        echo -e "  ${C_YELLOW}本课程所有扫描、攻击、payload 测试只允许对以下目标执行：${C_RESET}"
+        echo -e "    ${C_BOLD}127.0.0.1${C_RESET}"
+        echo -e "    ${C_BOLD}localhost${C_RESET}"
+        echo -e "    ${C_BOLD}课程 Docker 容器映射到本机的端口${C_RESET}"
+        echo
+        echo -e "  ${C_RED}禁止${C_RESET} 扫描校园网、同学机器、公网 IP、真实网站或任何非授权目标。"
+        echo -e "  ${C_RED}禁止${C_RESET} 把教程命令中的 ${C_BOLD}127.0.0.1${C_RESET} 替换成外部地址。"
+        echo
+        echo -e "  ${C_DIM}请输入 ${C_BOLD}127.0.0.1${C_RESET}${C_DIM} 确认你理解实验边界。${C_RESET}"
+        echo -ne "  > "
+        local ack
+        read -r ack
+        if [[ "$ack" != "127.0.0.1" && "$ack" != "localhost" ]]; then
+            ui_error "未确认本地实验边界，已退出。"
+            exit 1
+        fi
+        progress_set "SAFETY_ACK_AT" "$(date -Iseconds)"
     fi
 }
 
@@ -107,6 +136,7 @@ ensure_student_name() {
 # ── 主循环 ─────────────────────────────────────────
 main() {
     show_welcome
+    ensure_safety_ack
     ensure_student_name
 
     local student_name; student_name=$(progress_get "STUDENT_NAME")

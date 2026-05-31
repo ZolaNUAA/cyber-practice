@@ -1,5 +1,9 @@
 # Lab 12: Incident Response
 
+## Safety Boundary
+
+Only use this lab against `127.0.0.1`, `localhost`, local evidence files, and the course Docker services exposed on local ports. Do not replace course targets with campus IPs, classmates' machines, public IPs, domains, or real websites.
+
 ## Goal
 
 Complete a mini incident response exercise from evidence collection to final report.

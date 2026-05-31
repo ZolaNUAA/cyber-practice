@@ -78,3 +78,7 @@ services:
       - "127.0.0.1:8092:8080"
     volumes:
       - ./logs/incident:/app/logs
+
+networks:
+  default:
+    internal: true

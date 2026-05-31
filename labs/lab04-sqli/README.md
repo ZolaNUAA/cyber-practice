@@ -1,5 +1,9 @@
 # Lab 04: SQL Injection
 
+## Safety Boundary
+
+Only use this lab against `127.0.0.1`, `localhost`, and the course Docker services exposed on local ports. Do not replace course targets with campus IPs, classmates' machines, public IPs, domains, or real websites.
+
 ## Goal
 
 Practice SQL injection in a local teaching target and write professional mitigation advice.
@@ -29,4 +33,3 @@ Targets:
 - Request/response evidence
 - Vulnerable parameter explanation
 - Mitigation plan
-

@@ -166,7 +166,8 @@ ui_section_do() {
 ui_section_check() {
     echo
     echo -e "${C_BOLD}${C_YELLOW}  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
-    echo -e "${C_BOLD}${C_YELLOW}  ✅ 验证${C_RESET}"
+    echo -e "${C_BOLD}${C_YELLOW}  ✅ 过程自检${C_RESET}"
+    echo -e "${C_DIM}  这里只帮助你确认当前步骤是否完成；最终报告题以 tutorial/TUTORIAL.md 为准。${C_RESET}"
     echo -e "${C_BOLD}${C_YELLOW}  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${C_RESET}"
     echo
 }

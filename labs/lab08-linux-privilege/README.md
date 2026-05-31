@@ -1,5 +1,9 @@
 # Lab 08: Linux Privilege and Least Privilege
 
+## Safety Boundary
+
+Only use this lab inside the course Docker container and local Kali VM. Do not reuse commands, credentials, or payloads against campus machines, classmates' machines, public IPs, domains, or real systems.
+
 ## Goal
 
 Review Linux permissions, sudo rules, sensitive files, and least privilege.
@@ -37,4 +41,3 @@ sudo /usr/local/bin/backup-app
 - Permission findings
 - Sudo rule analysis
 - Least privilege recommendations
-
