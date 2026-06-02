@@ -4,7 +4,7 @@ services:
     container_name: nginx-lab
     profiles: ["recon", "info-leak", "logs", "incident"]
     ports:
-      - "127.0.0.1:8082:80"
+      - "${LAB_BIND_ADDR:-127.0.0.1}:8082:80"
     volumes:
       - ./services/nginx-lab/default.conf:/etc/nginx/conf.d/default.conf:ro
       - ./services/nginx-lab/html:/usr/share/nginx/html:ro
@@ -15,14 +15,14 @@ services:
     container_name: ssh-lab
     profiles: ["recon", "auth", "logs", "incident"]
     ports:
-      - "127.0.0.1:2222:22"
+      - "${LAB_BIND_ADDR:-127.0.0.1}:2222:22"
 
   upload-lab:
     build: ./services/upload-lab
     container_name: upload-lab
     profiles: ["recon", "upload", "incident"]
     ports:
-      - "127.0.0.1:8086:8080"
+      - "${LAB_BIND_ADDR:-127.0.0.1}:8086:8080"
     volumes:
       - ./logs/upload:/app/logs
 
@@ -31,7 +31,7 @@ services:
     container_name: cmd-lab
     profiles: ["cmd"]
     ports:
-      - "127.0.0.1:8087:8080"
+      - "${LAB_BIND_ADDR:-127.0.0.1}:8087:8080"
 
   priv-lab:
     build: ./services/priv-lab
@@ -44,7 +44,7 @@ services:
     container_name: traffic-lab
     profiles: ["recon", "traffic", "logs"]
     ports:
-      - "127.0.0.1:8089:8080"
+      - "${LAB_BIND_ADDR:-127.0.0.1}:8089:8080"
     volumes:
       - ./logs/traffic:/app/logs
 
@@ -61,24 +61,22 @@ services:
     container_name: juice-shop
     profiles: ["recon", "sqli", "xss"]
     ports:
-      - "127.0.0.1:3000:3000"
+      - "${LAB_BIND_ADDR:-127.0.0.1}:3000:3000"
 
   webgoat:
     image: webgoat/webgoat:latest
     container_name: webgoat
     profiles: ["recon", "sqli", "xss"]
+    environment:
+      SERVER_ADDRESS: 0.0.0.0
     ports:
-      - "127.0.0.1:8080:8080"
+      - "${LAB_BIND_ADDR:-127.0.0.1}:8080:8080"
 
   incident-lab:
     build: ./services/incident-lab
     container_name: incident-lab
     profiles: ["incident"]
     ports:
-      - "127.0.0.1:8092:8080"
+      - "${LAB_BIND_ADDR:-127.0.0.1}:8092:8080"
     volumes:
       - ./logs/incident:/app/logs
-
-networks:
-  default:
-    internal: true

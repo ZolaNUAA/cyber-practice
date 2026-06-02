@@ -40,6 +40,7 @@ echo "Safety boundary:"
 echo "  Allowed targets: 127.0.0.1, localhost, and the Docker containers started by this course."
 echo "  Do not scan campus networks, classmates' machines, public IPs, real websites, or any non-authorized target."
 echo "  Do not replace course command targets with external addresses."
+echo "  If the lab must be accessed from the host outside this VM, start with: LAB_BIND_ADDR=0.0.0.0 ./start-lab.sh $LAB"
 echo
 echo "Lab manual:"
 find "$ROOT_DIR/labs" -maxdepth 2 -type f -name "README.md" | sort | grep "$LAB" || true
